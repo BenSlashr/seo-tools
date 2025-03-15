@@ -1,0 +1,3 @@
+[submodule "clustering-kw"]
+	path = clustering-kw
+	url = git@github.com:BenSlashr/kw-clustering.git
