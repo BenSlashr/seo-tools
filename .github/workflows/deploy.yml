@@ -32,3 +32,7 @@ jobs:
             docker compose up -d --build
             sudo systemctl start nginx
             echo "🚀 Déploiement terminé !"
+
+      - name: Update submodules
+        run: git submodule update --remote --merge
+
