@@ -1,0 +1,34 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main  # Déclencher le déploiement sur chaque push sur main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout du dépôt
+        uses: actions/checkout@v4
+        with:
+          submodules: true  # Récupère les sous-modules
+
+      - name: 🔑 Configurer SSH et se connecter au VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "✅ Connexion SSH réussie"
+            cd /var/www/seo-tools
+            git reset --hard origin/main
+            git pull origin main --recurse-submodules
+            git submodule update --init --recursive
+            sudo systemctl stop nginx || true
+            docker compose down
+            docker compose up -d --build
+            sudo systemctl start nginx
+            echo "🚀 Déploiement terminé !"
